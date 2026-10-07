@@ -113,6 +113,12 @@ class FFmpegDecoder(Decoder):
         else:
             command.extend(["-fps_mode", "passthrough"])
 
+        # Keep every frame at its decoded size: the reference MD5s of streams
+        # that change resolution cover the frames as decoded, not scaled to
+        # the first frame's size.
+        if not self.ffmpeg_version or self.ffmpeg_version >= (4, 4):
+            command.append("-noautoscale")
+
         # Hardware download
         download = ""
         if self.hw_acceleration and self.hw_download:
